@@ -1,0 +1,6 @@
+# Laufzeitdaten des Servers – nicht ins Repository
+data/admin.php
+data/login-attempts.json
+data/backups/
+data/.lock
+data/*.tmp

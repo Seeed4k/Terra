@@ -1,0 +1,47 @@
+# ------------------------------------------------------------------
+# Terra & Garten – Webserver-Einstellungen (Apache, z. B. IONOS Webhosting)
+# ------------------------------------------------------------------
+Options -Indexes -MultiViews
+DirectoryIndex index.php index.html
+AddDefaultCharset UTF-8
+
+# Immer HTTPS verwenden (SSL-Zertifikat ist bei IONOS inklusive und muss der Domain zugewiesen sein)
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteCond %{HTTP_HOST} !^(localhost|127\.0\.0\.1)(:\d+)?$
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# Interne Ordner/Dateien niemals ausliefern
+<IfModule mod_rewrite.c>
+  RewriteRule ^(data|inc)(/|$) - [F,L]
+  RewriteRule (^|/)\.(git|lock) - [F,L]
+  RewriteRule ^README\.md$ - [F,L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+</IfModule>
+
+# Komprimierung
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript text/javascript image/svg+xml application/json text/plain
+</IfModule>
+
+# Browser-Cache: Bilder/Schriften lange, CSS/JS über ?v= versioniert
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 month"
+  ExpiresByType image/svg+xml "access plus 1 month"
+  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/javascript "access plus 1 year"
+</IfModule>
