@@ -34,6 +34,15 @@ jedem IONOS-Webhosting-Paket.
    jeder, der diese Adresse aufruft, eines festlegen.
 6. Kontrolle: `https://ihre-domain.de/data/content.json` muss **„403 Forbidden“** liefern.
 
+## Einfacher: Installationspaket (auch vom Handy)
+
+`sh tools/paket-bauen.sh` erzeugt `dist/terra.zip` und `dist/installieren.php`.
+Nur diese **zwei Dateien** (z. B. mit dem IONOS-Dateimanager) ins Hauptverzeichnis
+der Domain hochladen und `https://ihre-domain.de/installieren.php` aufrufen. Das Skript
+prüft den Server, entpackt alles inkl. `.htaccess`, testet den Ordnerschutz und löscht
+sich danach selbst. Ist die Seite schon installiert, arbeitet es als **Update** und lässt
+`data/` und `uploads/` unangetastet.
+
 ## Spätere Updates am Code
 
 Beim erneuten Hochladen die Ordner **`data/` und `uploads/` nicht überschreiben** –

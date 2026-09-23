@@ -4,3 +4,4 @@ data/login-attempts.json
 data/backups/
 data/.lock
 data/*.tmp
+dist/
