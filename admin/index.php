@@ -539,7 +539,7 @@ function view_project(array $p): void
 {
     $n = count($p['images']);
     ?>
-  <p><a href="?p=projekte">← Alle Projekte</a></p>
+  <p class="row"><a href="?p=projekte">← Alle Projekte</a><?php if (!empty($p['visible'])): ?><a href="../projekte/<?= e($p['slug']) ?>/" target="_blank" rel="noopener">Projektseite ansehen ↗</a><?php endif; ?></p>
   <form method="post" action="./" id="projectForm" data-id="<?= e($p['id']) ?>">
     <?= csrf_field() ?>
     <input type="hidden" name="action" value="project_save">

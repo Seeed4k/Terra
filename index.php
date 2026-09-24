@@ -13,7 +13,7 @@ $projects = visible_projects($d);
 $tel = 'tel:+' . phone_intl($c['phone']);
 $wa = wa_link($c, wa_intro($c));
 
-render_head($d, 'Terra & Garten Hübers – Erdbau, Garten- und Landschaftsbau in Haren', 'Terra & Garten – Ihr Dienstleister Christoph Hübers aus Haren (Ems): Erdbau, Baggerarbeiten, Garten- und Landschaftsbau, Rasen, Zaunbau, Transport und Material.', '');
+render_head($d, 'Garten- & Landschaftsbau, Erdbau in Haren (Ems) | Terra & Garten Hübers', 'Terra & Garten Hübers aus Haren (Ems): Garten- und Landschaftsbau, Erdbau, Baggerarbeiten, Rasen anlegen und Zaunbau im Emsland – alles aus einer Hand. Jetzt anfragen!', '');
 render_header($d, '', (bool)$projects);
 ?>
 
@@ -27,8 +27,8 @@ render_header($d, '', (bool)$projects);
       <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s7-6.5 7-12a7 7 0 1 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Haren (Ems) &amp; Emsland</span>
       <span>52°47′ N  7°14′ O</span>
     </div>
-    <h1 class="logo-h1"><img src="assets/img/logo.webp" alt="Terra &amp; Garten – Ihr Dienstleister Hübers" width="1000" height="868" fetchpriority="high"></h1>
-    <p class="lede">Erdbau, Baggerarbeiten und Gartenbau aus einer Hand. Vom ersten Aushub bis zum fertigen Garten.</p>
+    <h1 class="logo-h1"><img src="assets/img/logo.webp" alt="Terra &amp; Garten – Ihr Dienstleister Hübers" width="1000" height="868" fetchpriority="high"><span class="sr-only">Terra &amp; Garten Hübers – Garten- und Landschaftsbau, Erdbau und Baggerarbeiten in Haren (Ems)</span></h1>
+    <p class="lede">Erdbau, Baggerarbeiten und Gartenbau aus einer Hand – in Haren (Ems) und im ganzen Emsland. Vom ersten Aushub bis zum fertigen Garten.</p>
     <div class="cta">
       <a class="btn btn-sand" href="<?= e($tel) ?>"><?= ICON_PHONE ?>Jetzt anrufen</a>
       <a class="btn btn-wa" href="<?= e($wa) ?>" target="_blank" rel="noopener"><?= ICON_WA ?>WhatsApp</a>
@@ -48,32 +48,32 @@ render_header($d, '', (bool)$projects);
       <article class="svc reveal">
         <svg class="ic" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4 52h56"/><path d="M8 52l8-10h14l8 10"/><path d="M40 52c4-8 10-12 18-12"/><path d="M14 36l6-14 8 6-4 8"/><path d="M20 22l14-10 10 12"/><path d="M44 24l-6 8h10z"/></svg>
         <h3>Erdbau</h3>
-        <div><p>Wir bereiten den Boden für alles, was darauf entstehen soll.</p><ul><li>Aushubarbeiten</li><li>Baugruben</li><li>Planierarbeiten</li></ul></div>
+        <div><p>Wir bereiten den Boden für alles, was darauf entstehen soll.</p><ul><li>Aushubarbeiten</li><li>Baugruben</li><li>Planierarbeiten</li></ul><a class="svc-more" href="erdbau-baggerarbeiten-haren/">Mehr zu Erdbau →</a></div>
       </article>
       <article class="svc reveal">
         <svg class="ic" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><rect x="6" y="42" width="30" height="10" rx="5"/><circle cx="12" cy="47" r="2"/><circle cx="21" cy="47" r="2"/><circle cx="30" cy="47" r="2"/><path d="M10 42V30h16v12"/><path d="M14 30v-6h8l4 6"/><path d="M26 34l14-18 12 8"/><path d="M52 24l6 10-10 2z"/></svg>
         <h3>Baggerarbeiten</h3>
-        <div><p>Präzise, zuverlässig und effizient – auch auf engem Grundstück.</p><ul><li>Minibagger-Einsatz</li><li>Erdarbeiten</li><li>Leitungsgräben</li><li>Abbruch &amp; Rückbau im Garten</li></ul></div>
+        <div><p>Präzise, zuverlässig und effizient – auch auf engem Grundstück.</p><ul><li>Minibagger-Einsatz</li><li>Erdarbeiten</li><li>Leitungsgräben</li><li>Abbruch &amp; Rückbau im Garten</li></ul><a class="svc-more" href="erdbau-baggerarbeiten-haren/">Mehr zu Baggerarbeiten →</a></div>
       </article>
       <article class="svc reveal">
         <svg class="ic" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M4 54c10-8 20-8 28-2s18 6 28-2"/><path d="M4 60h56"/><path d="M32 50V28"/><path d="M32 36c-10 0-14-6-14-14 10 0 14 6 14 14z"/><path d="M32 30c8 0 12-5 12-12-8 0-12 5-12 12z"/><path d="M14 52v-8M50 50v-6"/></svg>
         <h3>Garten- &amp; Landschaftsbau</h3>
-        <div><p>Gärten, die jeden Tag genutzt werden und trotzdem gut aussehen.</p><ul><li>Gartenumgestaltung</li><li>Rasen anlegen</li><li>Beete &amp; Einfassungen</li></ul></div>
+        <div><p>Gärten, die jeden Tag genutzt werden und trotzdem gut aussehen.</p><ul><li>Gartenumgestaltung</li><li>Rasen anlegen</li><li>Beete &amp; Einfassungen</li></ul><a class="svc-more" href="gartenbau-haren/">Mehr zum Garten- &amp; Landschaftsbau →</a></div>
       </article>
       <article class="svc reveal">
         <svg class="ic" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"><path d="M32 58V34"/><path d="M32 42l-8-6M32 38l7-6"/><path d="M32 34c-12 0-18-6-18-14S22 6 32 6s18 6 18 14-6 14-18 14z"/><path d="M20 58h24"/></svg>
         <h3>Bepflanzung</h3>
-        <div><p>Die passende Pflanze für Boden, Licht und Pflegeaufwand.</p><ul><li>Sträucher</li><li>Bäume</li><li>Rasenflächen</li></ul></div>
+        <div><p>Die passende Pflanze für Boden, Licht und Pflegeaufwand.</p><ul><li>Sträucher</li><li>Bäume</li><li>Rasenflächen</li></ul><a class="svc-more" href="gartenbau-haren/">Mehr zur Bepflanzung →</a></div>
       </article>
       <article class="svc reveal">
         <svg class="ic" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M8 58V16l4-6 4 6v42M24 58V16l4-6 4 6v42M40 58V16l4-6 4 6v42"/><path d="M4 26h52M4 46h52"/><path d="M52 58V22h8v36"/></svg>
         <h3>Zaunbau</h3>
-        <div><p>Grenzen ziehen, Einblicke nehmen, Grundstücke sichern.</p><ul><li>Sichtschutz</li><li>Holzzäune</li><li>Gabionen</li></ul></div>
+        <div><p>Grenzen ziehen, Einblicke nehmen, Grundstücke sichern.</p><ul><li>Sichtschutz</li><li>Holzzäune</li><li>Gabionen</li></ul><a class="svc-more" href="zaunbau-haren/">Mehr zum Zaunbau →</a></div>
       </article>
       <article class="svc reveal">
         <svg class="ic" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"><path d="M4 44V20h26l6 10h10l8 8v6z"/><path d="M4 20l6-8h18"/><circle cx="14" cy="48" r="5"/><circle cx="44" cy="48" r="5"/><path d="M38 34h14"/></svg>
         <h3>Transport &amp; Material</h3>
-        <div><p>Wir liefern, was Ihr Projekt braucht – direkt an die Baustelle.</p><ul><li>Schüttgut</li><li>Mutterboden</li><li>Kies &amp; Splitt</li><li>und mehr</li></ul></div>
+        <div><p>Wir liefern, was Ihr Projekt braucht – direkt an die Baustelle.</p><ul><li>Schüttgut</li><li>Mutterboden</li><li>Kies &amp; Splitt</li><li>und mehr</li></ul><a class="svc-more" href="erdbau-baggerarbeiten-haren/">Mehr zu Transport &amp; Material →</a></div>
       </article>
     </div>
   </div>
@@ -102,7 +102,7 @@ render_header($d, '', (bool)$projects);
       </svg>
       <div class="ptext">
         <h2>Was unter einem guten Rasen steckt</h2>
-        <p class="intro">Das meiste sieht man später nicht. Genau deshalb machen wir es gründlich. Scrollen Sie weiter und sehen Sie, wie eine Fläche entsteht.</p>
+        <p class="intro">Das meiste sieht man später nicht. Genau deshalb machen wir es gründlich. Scrollen Sie weiter und sehen Sie, wie eine Fläche entsteht. <a class="svc-more" href="rasen-anlegen-emsland/">Mehr zum Rasen anlegen →</a></p>
         <ol class="psteps">
           <li><b><small>Schritt 1 von 4</small>Untergrund</b><p>Alter Rasen und Wurzeln raus, Boden lockern, Gefälle anlegen – damit Wasser abläuft, statt Pfützen zu bilden.</p></li>
           <li><b><small>Schritt 2 von 4</small>Oberboden</b><p>Frischer Mutterboden in ausreichender Stärke. Er ist die Grundlage für kräftige, tiefe Wurzeln.</p></li>
@@ -146,6 +146,7 @@ render_header($d, '', (bool)$projects);
 <?php if ($p['intro'] !== ''): ?>
         <p class="intro"><?= e($p['intro']) ?></p>
 <?php endif; ?>
+        <p class="intro"><a class="svc-more" href="projekte/<?= e($p['slug']) ?>/">Alle Bilder &amp; Details zum Projekt →</a></p>
       </div>
 <?php if ($p['has_ba']): $b = $p['before']; $a = $p['after']; ?>
       <div class="ba reveal" style="--ar:<?= (int)$b['w'] ?>/<?= (int)$b['h'] ?>">

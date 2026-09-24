@@ -62,9 +62,18 @@ function content_normalize(array $d): array
         'greeting' => 'Hallo,',
     ], is_array($d['contact'] ?? null) ? $d['contact'] : []);
     $d['projects'] = array_values(array_filter(is_array($d['projects'] ?? null) ? $d['projects'] : [], 'is_array'));
+    $slugs = [];
     foreach ($d['projects'] as &$p) {
-        $p = array_merge(['id' => '', 'title' => '', 'intro' => '', 'visible' => true, 'before' => null, 'after' => null, 'images' => []], $p);
+        $p = array_merge(['id' => '', 'slug' => '', 'title' => '', 'intro' => '', 'visible' => true, 'before' => null, 'after' => null, 'images' => []], $p);
         $p['images'] = array_values(array_filter(is_array($p['images']) ? $p['images'] : [], 'is_array'));
+        // Adresse der Projektseite: einmal aus dem Titel erzeugt, danach stabil (Links bei Google bleiben gültig)
+        $slug = $p['slug'] !== '' ? $p['slug'] : (slugify($p['title']) ?: 'projekt');
+        $base = $slug;
+        for ($n = 2; isset($slugs[$slug]); $n++) {
+            $slug = $base . '-' . $n;
+        }
+        $slugs[$slug] = true;
+        $p['slug'] = $slug;
     }
     unset($p);
     $d['legal'] = array_merge(['impressum' => '', 'datenschutz' => ''], is_array($d['legal'] ?? null) ? $d['legal'] : []);
@@ -117,6 +126,28 @@ function backup_list(): array
         return strcmp($b['file'], $a['file']);
     });
     return $out;
+}
+
+/** "Gartenumgestaltung in Mëppen" → "gartenumgestaltung-in-meppen" */
+function slugify(string $text): string
+{
+    $t = mb_strtolower(trim($text));
+    $t = strtr($t, ['ä' => 'ae', 'ö' => 'oe', 'ü' => 'ue', 'ß' => 'ss', '&' => ' und ']);
+    if (function_exists('iconv')) {
+        $t = (string)@iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $t);
+    }
+    $t = preg_replace('/[^a-z0-9]+/', '-', $t) ?? '';
+    return substr(trim($t, '-'), 0, 60);
+}
+
+/** Feste Hauptadresse für Google (immer ohne www, auf dem Server immer https) */
+function canonical_origin(): string
+{
+    $host = preg_replace('/^www\./i', '', parse_url(site_origin(), PHP_URL_HOST) ?: 'localhost');
+    if (in_array($host, ['localhost', '127.0.0.1'], true)) {
+        return site_origin();
+    }
+    return 'https://' . $host;
 }
 
 /** "01522 5700540" → "4915225700540" (für tel: und wa.me) */

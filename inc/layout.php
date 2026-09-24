@@ -15,10 +15,11 @@ function wa_intro(array $c): string
     return trim($c['greeting'] . ' ich interessiere mich für ein Projekt.');
 }
 
-function render_head(array $d, string $title, string $desc, string $base, string $path = '/'): void
+function render_head(array $d, string $title, string $desc, string $base, string $path = '/', array $schema = [], bool $index = true, string $image = ''): void
 {
     $c = $d['contact'];
-    $origin = site_origin();
+    $origin = canonical_origin();
+    $image = $image !== '' ? $origin . '/' . ltrim($image, '/') : $origin . '/assets/img/logo.webp';
     ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -34,12 +35,17 @@ function render_head(array $d, string $title, string $desc, string $base, string
 <meta property="og:title" content="<?= e($title) ?>">
 <meta property="og:description" content="<?= e($desc) ?>">
 <meta property="og:url" content="<?= e($origin . $path) ?>">
-<meta property="og:image" content="<?= e($origin . '/assets/img/logo.webp') ?>">
+<meta property="og:image" content="<?= e($image) ?>">
+<?php if (!$index): ?><meta name="robots" content="noindex, follow">
+<?php endif; ?>
 <link rel="icon" href="<?= e($base) ?>favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="<?= e($base) ?>assets/img/apple-touch-icon.png">
 <link rel="preload" href="<?= e($base) ?>assets/fonts/big-shoulders-display-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="<?= e($base) ?>assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="<?= e(asset('assets/css/site.css', $base)) ?>">
+<?php foreach ($schema as $sc): ?>
+<script type="application/ld+json"><?= json_encode($sc, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) ?></script>
+<?php endforeach; ?>
 <?php if ($path === '/'): ?>
 <link rel="preload" href="<?= e($base) ?>assets/img/logo.webp" as="image" type="image/webp" fetchpriority="high">
 <script type="application/ld+json"><?= json_encode([
@@ -48,6 +54,8 @@ function render_head(array $d, string $title, string $desc, string $base, string
         'name'      => $c['company'] . ($c['owner'] !== '' ? ' – ' . $c['owner'] : ''),
         'url'       => $origin . '/',
         'image'     => $origin . '/assets/img/logo.webp',
+        'logo'      => $origin . '/assets/img/logo.webp',
+        'geo'       => ['@type' => 'GeoCoordinates', 'latitude' => 52.79, 'longitude' => 7.24],
         'telephone' => $c['phone'] !== '' ? '+' . phone_intl($c['phone']) : null,
         'email'     => $c['email'] ?: null,
         'address'   => [
@@ -106,8 +114,9 @@ function render_footer(array $d, string $base): void
   <div class="wrap">
     <div class="foot">
       <a href="<?= e($base) ?>#start" aria-label="Zum Seitenanfang"><img class="foot-logo" src="<?= e($base) ?>assets/img/logo.webp" alt="Terra &amp; Garten Hübers" width="170" height="148" loading="lazy"></a>
-      <nav><a href="<?= e($base) ?>#leistungen">Leistungen</a><a href="<?= e($base) ?>#kontakt">Kontakt</a><a href="<?= e($base) ?>impressum/">Impressum</a><a href="<?= e($base) ?>datenschutz/">Datenschutz</a></nav>
+      <nav><a href="<?= e($base) ?>#leistungen">Leistungen</a><a href="<?= e($base) ?>projekte/">Projekte</a><a href="<?= e($base) ?>#kontakt">Kontakt</a><a href="<?= e($base) ?>impressum/">Impressum</a><a href="<?= e($base) ?>datenschutz/">Datenschutz</a></nav>
     </div>
+    <nav class="foot-svc" aria-label="Leistungen"><?php foreach (services() as $k => $sv): ?><a href="<?= e($base . $k) ?>/"><?= e($sv['nav']) ?> in Haren &amp; Emsland</a><?php endforeach; ?></nav>
     <p style="margin-top:1.5rem;font-size:.85rem">© <?= date('Y') ?> <?= e($c['company']) ?><?= $c['owner'] !== '' ? ' ' . e(preg_replace('/^.*\s/u', '', $c['owner'])) : '' ?></p>
   </div>
 </footer>
@@ -122,7 +131,7 @@ function render_legal_page(string $key, string $heading): void
 {
     $d = content_load();
     $hasProjects = (bool)visible_projects($d);
-    render_head($d, $heading . ' – Terra & Garten Hübers', $heading . ' von Terra & Garten Hübers, Haren (Ems).', '../', '/' . $key . '/');
+    render_head($d, $heading . ' – Terra & Garten Hübers', $heading . ' von Terra & Garten Hübers, Haren (Ems).', '../', '/' . $key . '/', [], false);
     render_header($d, '../', $hasProjects, true);
     ?>
 <main class="legal-page">
@@ -152,3 +161,5 @@ function visible_projects(array $d): array
     }
     return $out;
 }
+
+require __DIR__ . '/services.php';

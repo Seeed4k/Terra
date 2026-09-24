@@ -66,7 +66,7 @@ Upload nur für echte Bilder, keine Skriptausführung im Upload-Ordner.
 ## Lokal testen
 
 ```bash
-php -S localhost:8000
+php -S localhost:8000 tools/dev-router.php
 ```
 
 Dann `http://localhost:8000` bzw. `http://localhost:8000/admin/` öffnen.
