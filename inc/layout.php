@@ -17,6 +17,7 @@ function wa_intro(array $c): string
 
 function render_head(array $d, string $title, string $desc, string $base, string $path = '/', array $schema = [], bool $index = true, string $image = ''): void
 {
+    stats_hit($path);
     $c = $d['contact'];
     $origin = canonical_origin();
     $image = $image !== '' ? $origin . '/' . ltrim($image, '/') : $origin . '/assets/img/logo.webp';
@@ -137,7 +138,14 @@ function render_legal_page(string $key, string $heading): void
 <main class="legal-page">
   <div class="wrap">
     <h1><?= e($heading) ?></h1>
-    <div class="ds"><?= sanitize_html($d['legal'][$key]) ?></div>
+    <div class="ds"><?= sanitize_html($d['legal'][$key]) ?>
+<?php if ($key === 'datenschutz' && !empty(stats_config()['enabled'])): ?>
+      <h3>Besucherstatistik ohne Cookies</h3>
+      <p>Um zu erfahren, wie viele Menschen diese Website besuchen und ob sie uns darüber kontaktieren, zählen wir Seitenaufrufe sowie Klicks auf die Schaltflächen für Anruf, WhatsApp und E-Mail. Dafür werden <b>keine Cookies</b> gesetzt, es werden keine Informationen auf Ihrem Endgerät gespeichert oder ausgelesen und es werden keine Dienste Dritter eingesetzt; die Auswertung erfolgt ausschließlich auf unserem eigenen Webserver.</p>
+      <p>Ihre IP-Adresse wird dabei nicht gespeichert. Um Mehrfachaufrufe am selben Tag nur einmal zu zählen, wird aus IP-Adresse, Browser-Kennung und einem täglich wechselnden Zufallswert ein Prüfwert gebildet, aus dem sich Ihre IP-Adresse nicht zurückrechnen lässt. Dieser Prüfwert wird spätestens nach 24 Stunden gelöscht. Gespeichert werden nur zusammengefasste Zahlen (z. B. Anzahl der Besucher pro Tag, aufgerufene Seiten, allgemeine Herkunft wie „Google“). Eine Zuordnung zu einzelnen Personen ist nicht möglich.</p>
+      <p>Rechtsgrundlage ist unser berechtigtes Interesse an einer bedarfsgerechten Gestaltung unseres Webangebots (Art. 6 Abs. 1 lit. f DSGVO).</p>
+<?php endif; ?>
+    </div>
     <a class="back" href="../">← Zurück zur Startseite</a>
   </div>
 </main>

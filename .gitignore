@@ -5,3 +5,4 @@ data/backups/
 data/.lock
 data/*.tmp
 dist/
+data/stats/

@@ -7,6 +7,7 @@ declare(strict_types=1);
 require dirname(__DIR__) . '/inc/bootstrap.php';
 require dirname(__DIR__) . '/inc/images.php';
 require dirname(__DIR__) . '/inc/auth.php';
+require dirname(__DIR__) . '/inc/services.php';
 
 header('X-Frame-Options: DENY');
 header('X-Robots-Tag: noindex, nofollow');
@@ -17,6 +18,12 @@ admin_session_start();
 
 $page = (string)($_GET['p'] ?? 'start');
 $post = $_SERVER['REQUEST_METHOD'] === 'POST';
+
+/** Eigenes Gerät von der Besucherstatistik ausnehmen */
+function mark_owner_device(): void
+{
+    setcookie('tg_nostat', '1', ['expires' => time() + 365 * 86400, 'path' => '/', 'secure' => is_https(), 'httponly' => true, 'samesite' => 'Lax']);
+}
 
 function go(string $query = '', ?string $type = null, string $msg = ''): void
 {
@@ -94,6 +101,7 @@ if (!admin_is_setup()) {
             admin_set_password($pw);
             session_regenerate_id(true);
             $_SESSION['auth'] = true;
+            mark_owner_device();
             go('', 'ok', 'Passwort gespeichert – willkommen im Verwaltungsbereich!');
         }
     }
@@ -106,6 +114,7 @@ if (!admin_logged_in()) {
     if ($post && ($_POST['action'] ?? '') === 'login') {
         csrf_check();
         if (admin_login((string)($_POST['pw'] ?? ''))) {
+            mark_owner_device();
             go();
         }
         $wait = login_locked_for();
@@ -285,6 +294,29 @@ if ($post) {
                 content_save(content_normalize($restored));
                 go('p=sicherungen', 'ok', 'Sicherung wiederhergestellt. Der vorherige Stand wurde ebenfalls gesichert.');
 
+            case 'stats_save':
+                $cfg = stats_config();
+                $cfg['enabled'] = !empty($_POST['enabled']);
+                $cfg['report'] = !empty($_POST['report']);
+                $mail = str_in('email', 120);
+                if ($mail !== '' && !filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+                    go('p=statistik', 'error', 'Die E-Mail-Adresse ist ungültig – nichts gespeichert.');
+                }
+                $cfg['email'] = $mail;
+                if ($cfg['last_report'] === '') {
+                    $cfg['last_report'] = stats_prev_month(date('Y-m')); // ersten Bericht erst für den laufenden Monat senden
+                }
+                stats_config_save($cfg);
+                go('p=statistik', 'ok', 'Einstellungen gespeichert.');
+
+            case 'stats_test':
+                $cfg = stats_config();
+                if ($cfg['email'] === '') {
+                    go('p=statistik', 'error', 'Bitte zuerst eine E-Mail-Adresse eintragen und speichern.');
+                }
+                $ok = stats_send_report(date('Y-m'), $cfg['email']);
+                go('p=statistik', $ok ? 'ok' : 'error', $ok ? 'Testbericht an ' . $cfg['email'] . ' verschickt – bitte auch im Spam-Ordner nachsehen.' : 'Der Server konnte die E-Mail nicht versenden.');
+
             case 'password_change':
                 $cur = (string)($_POST['current'] ?? '');
                 $pw = (string)($_POST['pw'] ?? '');
@@ -345,6 +377,10 @@ switch ($page) {
     case 'sicherungen':
         view_start('Sicherungen', 'sicherungen');
         view_backups();
+        break;
+    case 'statistik':
+        view_start('Statistik', 'statistik');
+        view_stats();
         break;
     case 'passwort':
         view_start('Passwort ändern', 'passwort');
@@ -421,7 +457,7 @@ function view_auth(string $title, string $mode, string $error): void
 function view_start(string $title, string $active): void
 {
     view_head($title);
-    $nav = ['start' => 'Übersicht', 'projekte' => 'Projekte', 'recht' => 'Rechtstexte', 'kontakt' => 'Kontaktdaten', 'sicherungen' => 'Sicherungen', 'passwort' => 'Passwort'];
+    $nav = ['start' => 'Übersicht', 'projekte' => 'Projekte', 'recht' => 'Rechtstexte', 'kontakt' => 'Kontaktdaten', 'statistik' => 'Statistik', 'sicherungen' => 'Sicherungen', 'passwort' => 'Passwort'];
     ?>
 <body data-csrf="<?= e(csrf_token()) ?>">
 <header class="bar">
@@ -474,6 +510,8 @@ function view_dashboard(array $d): void
     <a class="card" href="?p=recht&amp;doc=datenschutz"><b>Datenschutzerklärung</b><span>Informationen zur Datenverarbeitung</span></a>
     <a class="card" href="?p=kontakt"><b>Kontaktdaten</b><span>Telefon, WhatsApp, E-Mail, Adresse</span></a>
     <a class="card" href="?p=sicherungen"><b>Sicherungen</b><span>Frühere Stände wiederherstellen</span></a>
+    <?php $st = stats_summary(date('Y-m')); ?>
+    <a class="card" href="?p=statistik"><b>Statistik</b><span><?= $st['uv'] ?> Besucher · <?= $st['contacts'] ?> Kontakt-Klicks in diesem Monat</span></a>
     <a class="card" href="?p=passwort"><b>Passwort ändern</b><span>Zugang zum Verwaltungsbereich</span></a>
   </div>
 <?php
@@ -678,6 +716,89 @@ function view_password(): void
     <label>Neues Passwort wiederholen<input type="password" name="pw2" required minlength="<?= PASSWORD_MIN_LEN ?>" autocomplete="new-password"></label>
     <button class="btn primary">Passwort ändern</button>
     <p class="muted">Passwort vergessen? Per FTP/SFTP die Datei <code>data/admin.php</code> löschen und danach <code>/admin/</code> aufrufen – dann kann ein neues Passwort festgelegt werden.</p>
+  </form>
+<?php
+}
+
+function view_stats(): void
+{
+    $cfg = stats_config();
+    $months = [];
+    foreach (glob(STATS_DIR . '/????-??.json') ?: [] as $f) {
+        $months[] = basename($f, '.json');
+    }
+    $cur = date('Y-m');
+    if (!in_array($cur, $months, true)) {
+        $months[] = $cur;
+    }
+    rsort($months);
+    $ym = in_array($_GET['m'] ?? '', $months, true) ? $_GET['m'] : $cur;
+    $s = stats_summary($ym);
+    $days = (int)date('t', strtotime($ym . '-01'));
+    $max = max(1, max($s['days'] ?: [0]));
+    $step = $max <= 5 ? 1 : ($max <= 20 ? 5 : ($max <= 50 ? 10 : (int)ceil($max / 50) * 10));
+    $top = (int)ceil($max / $step) * $step;
+    ?>
+  <div class="tabs">
+    <?php foreach (array_slice($months, 0, 6) as $m): ?>
+      <a href="?p=statistik&amp;m=<?= e($m) ?>"<?= $m === $ym ? ' aria-current="page"' : '' ?>><?= e(stats_month_label($m)) ?></a>
+    <?php endforeach; ?>
+  </div>
+  <?php if (empty($cfg['enabled'])): ?><div class="flash flash-info">Die Statistik ist ausgeschaltet – es wird nichts gezählt.</div><?php endif; ?>
+  <div class="kpis">
+    <div class="kpi"><span>Besucher</span><b><?= $s['uv'] ?></b></div>
+    <div class="kpi"><span>Kontakt-Klicks</span><b><?= $s['contacts'] ?></b><small><?= $s['ev']['call'] ?> Anrufen · <?= $s['ev']['wa'] + $s['ev']['form_wa'] ?> WhatsApp · <?= $s['ev']['mail'] + $s['ev']['form_mail'] ?> E-Mail</small></div>
+    <div class="kpi"><span>Seitenaufrufe</span><b><?= $s['pv'] ?></b></div>
+  </div>
+  <section class="panel">
+    <h2>Besucher pro Tag</h2>
+    <?php
+    $W = 720; $H = 200; $padL = 34; $padB = 24; $plotW = $W - $padL - 6; $plotH = $H - $padB - 10;
+    $slot = $plotW / $days; $bw = min(18, $slot - 2);
+    ?>
+    <div class="chart-wrap">
+    <svg class="chart" viewBox="0 0 <?= $W ?> <?= $H ?>" role="img" aria-label="Besucher pro Tag im <?= e(stats_month_label($ym)) ?>">
+      <?php for ($v = 0; $v <= $top; $v += $step): $y = 10 + $plotH - $v / $top * $plotH; ?>
+        <line x1="<?= $padL ?>" x2="<?= $W - 6 ?>" y1="<?= round($y, 1) ?>" y2="<?= round($y, 1) ?>" class="grid"/>
+        <text x="<?= $padL - 6 ?>" y="<?= round($y + 4, 1) ?>" class="ax" text-anchor="end"><?= $v ?></text>
+      <?php endfor; ?>
+      <?php for ($i = 1; $i <= $days; $i++):
+          $day = $ym . '-' . str_pad((string)$i, 2, '0', STR_PAD_LEFT);
+          $v = $s['days'][$day] ?? 0;
+          $x = $padL + ($i - 1) * $slot + ($slot - $bw) / 2;
+          $h = $v / $top * $plotH; $y = 10 + $plotH - $h; $r = min(4, $h, $bw / 2); ?>
+        <g class="bar"><title><?= $i ?>. <?= e(MONTHS_DE[(int)substr($ym, 5)]) ?>: <?= $v ?> Besucher</title>
+          <rect x="<?= round($padL + ($i - 1) * $slot, 1) ?>" y="10" width="<?= round($slot, 1) ?>" height="<?= $plotH ?>" class="hit"/>
+          <?php if ($v > 0): ?><path d="M<?= round($x, 1) ?> <?= round(10 + $plotH, 1) ?>V<?= round($y + $r, 1) ?>q0 -<?= round($r, 1) ?> <?= round($r, 1) ?> -<?= round($r, 1) ?>h<?= round($bw - 2 * $r, 1) ?>q<?= round($r, 1) ?> 0 <?= round($r, 1) ?> <?= round($r, 1) ?>V<?= round(10 + $plotH, 1) ?>z" class="mark"/><?php endif; ?>
+        </g>
+        <?php if ($i === 1 || $i % 5 === 0): ?><text x="<?= round($padL + ($i - 0.5) * $slot, 1) ?>" y="<?= $H - 6 ?>" class="ax" text-anchor="middle"><?= $i ?>.</text><?php endif; ?>
+      <?php endfor; ?>
+      <line x1="<?= $padL ?>" x2="<?= $W - 6 ?>" y1="<?= 10 + $plotH ?>" y2="<?= 10 + $plotH ?>" class="base"/>
+    </svg>
+    </div>
+    <p class="muted">Tipp: Mit dem Finger bzw. der Maus auf einen Balken zeigen, um die genaue Zahl zu sehen.</p>
+  </section>
+  <div class="grid2">
+    <section class="panel"><h2>So wurden Sie gefunden</h2>
+      <?php if (!$s['sources']): ?><p class="muted">Noch keine Daten.</p><?php else: ?>
+      <table class="stbl"><?php foreach (array_slice($s['sources'], 0, 8, true) as $k => $n): ?><tr><td><?= e($k) ?></td><td><?= (int)$n ?></td></tr><?php endforeach; ?></table><?php endif; ?>
+    </section>
+    <section class="panel"><h2>Beliebteste Seiten</h2>
+      <?php if (!$s['pages']): ?><p class="muted">Noch keine Daten.</p><?php else: ?>
+      <table class="stbl"><?php foreach (array_slice($s['pages'], 0, 8, true) as $k => $n): ?><tr><td><?= e(stats_page_label((string)$k)) ?></td><td><?= (int)$n ?></td></tr><?php endforeach; ?></table><?php endif; ?>
+    </section>
+  </div>
+  <form method="post" action="./" class="panel">
+    <?= csrf_field() ?><input type="hidden" name="action" value="stats_save">
+    <h2>Einstellungen</h2>
+    <label class="check"><input type="checkbox" name="enabled" value="1"<?= !empty($cfg['enabled']) ? ' checked' : '' ?>> Besucher zählen (ohne Cookies)</label>
+    <label class="check"><input type="checkbox" name="report" value="1"<?= !empty($cfg['report']) ? ' checked' : '' ?>> Monatsbericht per E-Mail schicken (am Monatsanfang)</label>
+    <label>E-Mail-Adresse für den Bericht<input type="email" name="email" value="<?= e($cfg['email'] !== '' ? $cfg['email'] : (content_load()['contact']['email'] ?? '')) ?>" placeholder="info@terra-garten-huebers.de"></label>
+    <div class="row">
+      <button class="btn primary">Speichern</button>
+      <button class="btn" name="action" value="stats_test" formnovalidate>Testbericht jetzt senden</button>
+    </div>
+    <p class="muted">Ihre eigenen Besuche von diesem Gerät werden nach der Anmeldung automatisch nicht mitgezählt. Die Zählung kommt ohne Cookie-Banner aus; ein Hinweis dazu steht automatisch in der Datenschutzerklärung.</p>
   </form>
 <?php
 }

@@ -5,6 +5,16 @@
   /* Alte Anker der früheren Einzeldatei auf die neuen Seiten umleiten */
   if(location.hash==='#impressum'||location.hash==='#datenschutz'){location.replace(location.hash.slice(1)+'/');return}
 
+  /* Anonyme Klick-Zählung (ohne Cookies) für den Monatsbericht */
+  var statsUrl=(document.currentScript&&document.currentScript.src||'').replace(/assets\/js\/site\.js.*$/,'stats.php');
+  function track(e){try{if(statsUrl&&navigator.sendBeacon){var f=new FormData();f.append('e',e);navigator.sendBeacon(statsUrl,f)}}catch(err){}}
+  document.addEventListener('click',function(ev){
+    var a=ev.target.closest&&ev.target.closest('a');if(!a)return;
+    var h=a.getAttribute('href')||'';
+    if(a.id==='sendWa')track('form_wa');else if(a.id==='sendMail')track('form_mail');
+    else if(h.indexOf('tel:')===0)track('call');else if(h.indexOf('wa.me')>-1)track('wa');else if(h.indexOf('mailto:')===0)track('mail');
+  },true);
+
   /* Header & Menü */
   var top=$('top'),burger=$('burger'),nav=$('nav'),bIcon=$('bIcon');
   function onScroll(){top.classList.toggle('solid',window.scrollY>40)}

@@ -130,3 +130,22 @@ body.auth{display:grid;place-items:center;min-height:100vh;background:var(--soil
 .brow{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.8rem;padding:.8rem 1.1rem;margin-bottom:.6rem}
 .brow form{margin:0}
 .progress[hidden]{display:none}
+
+/* Statistik */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1.2rem}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:1rem 1.2rem;display:grid;gap:.15rem}
+.kpi span{color:var(--muted);font-size:.9rem}
+.kpi b{font-size:2.2rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.kpi small{color:var(--muted);font-size:.85rem}
+.chart-wrap{overflow-x:auto}
+.chart{width:100%;min-width:520px;height:auto;display:block}
+.chart .grid{stroke:#ece6da;stroke-width:1}
+.chart .base{stroke:#cfc6b4;stroke-width:1}
+.chart .ax{font-size:11px;fill:#6a6356;font-variant-numeric:tabular-nums}
+.chart .mark{fill:#5f7a2e}
+.chart .hit{fill:transparent}
+.chart .bar:hover .mark{fill:#4a6123}
+.chart .bar:hover .hit{fill:rgba(95,122,46,.08)}
+.stbl{width:100%;border-collapse:collapse}
+.stbl td{padding:.45rem 0;border-bottom:1px solid var(--line)}
+.stbl td:last-child{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}

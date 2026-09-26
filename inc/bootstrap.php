@@ -202,3 +202,5 @@ function site_origin(): string
 }
 
 require __DIR__ . '/sanitize.php';
+
+require __DIR__ . '/stats.php';
