@@ -6,3 +6,4 @@ data/.lock
 data/*.tmp
 dist/
 data/stats/
+update-paket/
