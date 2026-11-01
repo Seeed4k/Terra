@@ -52,9 +52,10 @@ a{color:inherit}
 .top::before{content:"";position:absolute;inset:0;background:rgba(29,26,21,.92);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transition:opacity .35s;z-index:-1}
 .top.solid::before{opacity:1}.top.solid{border-color:rgba(236,231,220,.08)}
 .top .wrap{display:flex;align-items:center;justify-content:space-between;height:68px}
-.brand{display:flex;align-items:baseline;gap:.4rem;white-space:nowrap;text-decoration:none;color:#ece7dc}
+.brand{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:.4rem;row-gap:0;white-space:nowrap;text-decoration:none;color:#ece7dc}
 .brand b{white-space:nowrap;font-family:var(--display);font-weight:800;font-size:1.45rem;letter-spacing:.02em;line-height:1}
 .brand i{font-family:var(--script);font-style:normal;color:var(--sand);font-size:1.1rem}
+.brand small{flex-basis:100%;margin-top:.2rem;font-family:var(--body);font-size:.7rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:#b3ac9e;line-height:1}
 .nav{display:flex;gap:1.75rem;align-items:center}
 .nav a{color:#d8d2c5;text-decoration:none;font-weight:500;font-size:.98rem}
 .nav a:hover{color:#fff}
@@ -67,7 +68,7 @@ a{color:inherit}
   .nav a{font-family:var(--display);font-size:2.2rem;font-weight:700;color:#ece7dc}
   .nav .call{font-family:var(--body);font-size:1.1rem}
   .burger{display:block;position:relative;z-index:60}
-  .top .brand b{font-size:1.2rem}.top .brand i{font-size:.95rem}
+  .top .brand b{font-size:1.2rem}.top .brand i{font-size:.95rem}.top .brand small{font-size:.62rem}
 }
 
 /* ---------- Hero ---------- */
@@ -358,7 +359,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:100;op
 
 <header class="top" id="top">
   <div class="wrap">
-    <a class="brand" href="#start" aria-label="Terra & Garten Hübers, zum Seitenanfang"><b>TERRA &amp; GARTEN</b><i>Hübers</i></a>
+    <a class="brand" href="#start" aria-label="Terra & Garten Hübers, zum Seitenanfang"><b>TERRA &amp; GARTEN</b><i>Hübers</i><small>Ihr Dienstleister.</small></a>
     <button class="burger" id="burger" aria-label="Menü öffnen" aria-expanded="false" aria-controls="nav">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path id="bIcon" d="M4 7h16M4 12h16M4 17h10"/></svg>
     </button>
