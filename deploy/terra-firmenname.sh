@@ -18,13 +18,18 @@ export CREDIT
 APPLY=0; [ "${1:-}" = "--apply" ] && APPLY=1
 command -v perl >/dev/null || { echo "perl fehlt auf dem Server"; exit 1; }
 
-CSS=$(find . -path '*/assets/css/site.css' -not -path './backup-*' | head -n1)
-[ -n "$CSS" ] || { echo "assets/css/site.css nicht gefunden – bitte im Web-Ordner starten"; exit 1; }
+# Sicherheitsprüfung: nur direkt im Web-Ordner der Terra-Seite laufen
+[ "$(pwd)" != "$HOME" ] || { echo "ABBRUCH: Nicht im Home-Ordner starten. Erst per SSH auf den Server und in den Web-Ordner wechseln."; exit 1; }
+CSS=./assets/css/site.css
+[ -f "$CSS" ] || { echo "ABBRUCH: ./assets/css/site.css fehlt – das ist nicht der Web-Ordner der Terra-Seite."; exit 1; }
+grep -rqsI 'Hübers' --include='*.php' --include='*.html' . || { echo "ABBRUCH: Keine Terra-Hübers-Dateien in diesem Ordner."; exit 1; }
 
-FILES=$(grep -rlI --exclude-dir='backup-*' --exclude-dir=uploads \
+FILES=$(grep -rlI --exclude-dir='backup*' --exclude-dir='.?*' --exclude-dir=uploads --exclude-dir='*Sicherung*' \
   -e 'class="brand"' -e 'margin-top:1.5rem;font-size:.85rem">©' \
   --include='*.html' --include='*.htm' --include='*.php' --include='*.phtml' --include='*.tpl' \
-  --include='*.inc' --include='*.json' --include='*.twig' . || true)
+  --include='*.inc' --include='*.json' --include='*.twig' . | xargs -r grep -lI 'Hübers' || true)
+N=$(printf '%s\n' $FILES | grep -c . || true)
+[ "$N" -le 80 ] || { echo "ABBRUCH: $N Dateien gefunden – das ist zu viel für die Terra-Seite. Falscher Ordner?"; exit 1; }
 
 echo "CSS-Datei: $CSS"
 echo "Gefundene Dateien:"; for f in $FILES; do echo "  $f"; done
