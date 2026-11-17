@@ -100,3 +100,11 @@ curl -fsSLO https://raw.githubusercontent.com/Seeed4k/Terra/claude/terra-garten-
 sh terra-firmenname.sh            # Probelauf
 sh terra-firmenname.sh --apply    # Backup + Änderung
 ```
+
+## Nachtrag: Footer mit Webhafen-Logo (Variante B)
+
+Gewählt: **„Webdesign & Entwicklung von 〈~〉 Webhafen“**
+- Das Logo ist das Original von web-hafen.de (zwei Klammern, Welle in `#6F9BE0`), als SVG, so hoch wie die Schrift.
+- Logo und Name sind zusammen ein Link auf https://web-hafen.de.
+- Die Domain wird nicht mehr zusätzlich ausgeschrieben.
+- Steckt mit im Skript `deploy/terra-firmenname.sh`, zusammen mit der neuen Kopfzeile. Mockups liegen in `mockup/`.
