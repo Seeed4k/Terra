@@ -77,6 +77,7 @@ sh terra-aenderungen.sh --apply
 - Footer mit Webhafen-Hinweis auf Startseite, Impressum, Projekten und den Leistungsseiten
 
 ## Offene Punkte
-- [ ] Skript per SSH auf dem Server ausführen (`--apply`)
-- [ ] Live-Seite kontrollieren
+- [x] Skript per SSH auf dem Server ausgeführt (17.11.2026)
+- [x] Live-Seite kontrolliert: Kopfzeile und Footer-Hinweis auf allen Seiten sichtbar
+- [ ] ©-Zeile lautet live noch „Terra & Garten ihr Dienstleister Hübers“ – ggf. auf „Terra & Garten Hübers“ kürzen
 - [ ] Empfehlung: Den echten, aktuellen Quellcode der Live-Seite ins Repo `Seeed4k/Terra` übernehmen. Dann passen Repo und Server wieder zusammen, und künftige Änderungen können direkt im Repo gemacht werden.
