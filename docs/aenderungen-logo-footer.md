@@ -81,3 +81,22 @@ sh terra-aenderungen.sh --apply
 - [x] Live-Seite kontrolliert: Kopfzeile und Footer-Hinweis auf allen Seiten sichtbar
 - [ ] ©-Zeile lautet live noch „Terra & Garten ihr Dienstleister Hübers“ – ggf. auf „Terra & Garten Hübers“ kürzen
 - [ ] Empfehlung: Den echten, aktuellen Quellcode der Live-Seite ins Repo `Seeed4k/Terra` übernehmen. Dann passen Repo und Server wieder zusammen, und künftige Änderungen können direkt im Repo gemacht werden.
+
+## Nachtrag: Kopfzeile als Firmenname (17.11.2026)
+
+Der exakte Firmenname lautet **„Terra & Garten - Ihr Dienstleister Hübers“**. Die Kopfzeile ist jetzt wie das Rundlogo aufgebaut:
+
+```
+TERRA & GARTEN
+— IHR DIENSTLEISTER —  Hübers
+```
+
+- Der Punkt hinter „Ihr Dienstleister“ entfällt.
+- Die ©-Zeile im Footer lautet „© 2026 Terra & Garten - Ihr Dienstleister Hübers“.
+- Einspielen per SSH im Web-Ordner:
+
+```sh
+curl -fsSLO https://raw.githubusercontent.com/Seeed4k/Terra/claude/terra-garten-changes-40hi85/deploy/terra-firmenname.sh
+sh terra-firmenname.sh            # Probelauf
+sh terra-firmenname.sh --apply    # Backup + Änderung
+```
